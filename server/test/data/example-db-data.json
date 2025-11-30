@@ -1,0 +1,606 @@
+{
+    "users": [
+        {
+            "firstName": "Joe",
+            "lastName": "Shmo",
+            "email": "joe@shmo.com",
+            "passwordHash": "$2a$10$dPEwsAVi1ojv2RfxxTpZjuKSAbep7zEKb5myegm.ATbQ4sJk4agGu",
+            "playlists": [
+                "68f524b611e0f3901871f164",
+                "68f526c1ec1ea2ad00a6fae0"
+            ]
+        },
+        {
+            "firstName": "Jane",
+            "lastName": "Doe",
+            "email": "jane@doe.com",
+            "passwordHash": "$2a$10$dPEwsAVi1ojv2RfxxTpZjuKSAbep7zEKb5myegm.ATbQ4sJk4agGu",
+            "playlists": [
+                "68f526c4ec1ea2ad00a6fae8"
+            ]
+        },
+        {
+            "firstName": "Gatik",
+            "lastName": "Yadav",
+            "email": "gatik@yadav.com",
+            "passwordHash": "$2a$10$dPEwsAVi1ojv2RfxxTpZjuKSAbep7zEKb5myegm.ATbQ4sJk4agGu",
+            "playlists": [
+                "68f527a1ec1ea2ad00a6faf0",
+                "68f527a2ec1ea2ad00a6faf1",
+                "68f527a3ec1ea2ad00a6faf2"
+            ]
+        }
+    ],
+    "playlists": [
+        {
+            "_id": "68f524b611e0f3901871f164",
+            "ownerEmail": "joe@shmo.com",
+            "name": "Spacey",
+            "songs": [
+                {
+                    "title": "Across the Universe",
+                    "artist": "The Beatles",
+                    "year": 1969,
+                    "youTubeId": "90M60PzmxEE"
+                },
+                {
+                    "title": "Astronomy Domine",
+                    "artist": "Pink Floyd",
+                    "year": 1967,
+                    "youTubeId": "8UbNbor3OqQ"
+                },
+                {
+                    "title": "Black Hole Sun",
+                    "artist": "Soundgarden",
+                    "year": 1994,
+                    "youTubeId": "3mbBbFH9fAg"
+                },
+                {
+                    "title": "Brain Damage/Eclipse",
+                    "artist": "Pink Floyd",
+                    "year": 1973,
+                    "youTubeId": "g1OOQP1-wOE"
+                },
+                {
+                    "title": "Fly Me to the Moon",
+                    "artist": "Frank Sinatra",
+                    "year": 1964,
+                    "youTubeId": "ZEcqHA7dbwM"
+                },
+                {
+                    "title": "In the Meantime",
+                    "artist": "Spacehog",
+                    "year": 1994,
+                    "youTubeId": "PCsGRCf8T9Y"
+                },
+                {
+                    "title": "Major Tom",
+                    "artist": "Peter Shilling",
+                    "year": 1982,
+                    "youTubeId": "wO0A0XcWy88"
+                },
+                {
+                    "title": "Man on the Moon",
+                    "artist": "REM",
+                    "year": 1992,
+                    "youTubeId": "dLxpNiF0YKs"
+                },
+                {
+                    "title": "Rocket Man",
+                    "artist": "Elton John",
+                    "year": 1972,
+                    "youTubeId": "DtVBCG6ThDk"
+                },
+                {
+                    "title": "Set the Controls for the Heart of the Sun",
+                    "artist": "Pink Floyd",
+                    "year": 1968,
+                    "youTubeId": "qupVCTn5Dko"
+                },
+                {
+                    "title": "Space Oddity",
+                    "artist": "David Bowie",
+                    "year": 1969,
+                    "youTubeId": "iYYRH4apXDo"
+                },
+                {
+                    "title": "Space Song",
+                    "artist": "Beach House",
+                    "year": 2015,
+                    "youTubeId": "RBtlPT23PTM"
+                },
+                {
+                    "title": "Starless",
+                    "artist": "King Crimson",
+                    "year": 1974,
+                    "youTubeId": "OfR6_V91fG8"
+                },
+                {
+                    "title": "Starman",
+                    "artist": "David Bowie",
+                    "year": 1972,
+                    "youTubeId": "t365MuktYQs"
+                },
+                {
+                    "title": "Starship Trooper",
+                    "artist": "Yes",
+                    "year": 1971,
+                    "youTubeId": "xk4U8BembHM"
+                }
+            ]
+        },
+        {
+            "_id": "68f526c1ec1ea2ad00a6fae0",
+            "ownerEmail": "joe@shmo.com",
+            "name": "Any Colour You Like",
+            "songs": [
+                {
+                    "title": "99 Red Balloons",
+                    "artist": "Nena",
+                    "year": 1984,
+                    "youTubeId": "Fpu5a0Bl8eY"
+                },
+                {
+                    "title": "Big Blue Sun",
+                    "artist": "Adrian Belew",
+                    "year": 1986,
+                    "youTubeId": "DMkEmW2awQw"
+                },
+                {
+                    "title": "Black Dog",
+                    "artist": "Led Zeppelin",
+                    "year": 1971,
+                    "youTubeId": "2KPEHohJMuw"
+                },
+                {
+                    "title": "Golden Brown",
+                    "artist": "The Stranglers",
+                    "year": 1981,
+                    "youTubeId": "7KIHvuMl4Kk"
+                },
+                {
+                    "title": "Goodbye Yellow Brick Road",
+                    "artist": "Elton John",
+                    "year": 1973,
+                    "youTubeId": "wy709iNG6i8"
+                },
+                {
+                    "title": "Green is the Colour",
+                    "artist": "Pink Floyd",
+                    "year": 1969,
+                    "youTubeId": "4XeWngFZaa8"
+                },
+                {
+                    "title": "In the Court of the Crimson King",
+                    "artist": "King Crimson",
+                    "year": 1969,
+                    "youTubeId": "ukgraQ-xkp4"
+                },
+                {
+                    "title": "Orange Crush",
+                    "artist": "REM",
+                    "year": 1988,
+                    "youTubeId": "_mSmOcmk7uQ"
+                },
+                {
+                    "title": "Pink Houses",
+                    "artist": "John Mellancamp",
+                    "year": 1983,
+                    "youTubeId": "qOfkpu6749w"
+                },
+                {
+                    "title": "Purple Rain",
+                    "artist": "Prince",
+                    "year": 1984,
+                    "youTubeId": "TvnYmWpD_T8"
+                },
+                {
+                    "title": "White Lines",
+                    "artist": "Grandmaster Flash and the Furious Five",
+                    "year": 1983,
+                    "youTubeId": "DwRXI-y6M9o"
+                }
+            ]
+        },
+        {
+            "_id": "68f526c4ec1ea2ad00a6fae8",
+            "ownerEmail": "jane@doe.com",
+            "name": "Don't be Rude",
+            "songs": [
+                {
+                    "title": "A Message to You Rudy",
+                    "artist": "The Specials",
+                    "year": 1979,
+                    "youTubeId": "cntvEDbagAw"
+                },
+                {
+                    "title": "Rudie Can't Fail",
+                    "artist": "The Clash",
+                    "year": 1979,
+                    "youTubeId": "uEK9oK02D1M"
+                }
+            ]
+        },
+        {
+            "_id": "68f527a1ec1ea2ad00a6faf0",
+            "ownerEmail": "gatik@yadav.com",
+            "name": "Old School Hits",
+            "songs": [
+                {
+                    "title": "Bohemian Rhapsody",
+                    "artist": "Queen",
+                    "year": 1975,
+                    "youTubeId": "fJ9rUzIMcZQ"
+                },
+                {
+                    "title": "We Will Rock You",
+                    "artist": "Queen",
+                    "year": 1977,
+                    "youTubeId": "-tJYN-eG1zk"
+                },
+                {
+                    "title": "Another One Bites the Dust",
+                    "artist": "Queen",
+                    "year": 1980,
+                    "youTubeId": "rY0WxgSXdEE"
+                },
+                {
+                    "title": "Paint It Black",
+                    "artist": "The Rolling Stones",
+                    "year": 1966,
+                    "youTubeId": "O4irXQhgMqg"
+                },
+                {
+                    "title": "Start Me Up",
+                    "artist": "The Rolling Stones",
+                    "year": 1981,
+                    "youTubeId": "SGyOaCXr8Lw"
+                },
+                {
+                    "title": "Satisfaction",
+                    "artist": "The Rolling Stones",
+                    "year": 1965,
+                    "youTubeId": "nrIPxlFzDi0"
+                },
+                {
+                    "title": "Summer of '69",
+                    "artist": "Bryan Adams",
+                    "year": 1984,
+                    "youTubeId": "9f06QZCVUHg"
+                },
+                {
+                    "title": "Everything I Do I Do It for You",
+                    "artist": "Bryan Adams",
+                    "year": 1991,
+                    "youTubeId": "Y0pdQU87dc8"
+                },
+                {
+                    "title": "Run to You",
+                    "artist": "Bryan Adams",
+                    "year": 1984,
+                    "youTubeId": "nCBASt507WA"
+                },
+                {
+                    "title": "Yellow Submarine",
+                    "artist": "The Beatles",
+                    "year": 1965,
+                    "youTubeId": "m2uTFF_3MaA"
+                },
+                {
+                    "title": "Hey Jude",
+                    "artist": "The Beatles",
+                    "year": 1966,
+                    "youTubeId": "A_MjCqQoLLA"
+                },
+                {
+                    "title": "Come Together",
+                    "artist": "The Beatles",
+                    "year": 1969,
+                    "youTubeId": "_HONxwhwmgU"
+                },
+                {
+                    "title": "Born to Run",
+                    "artist": "Bruce Springsteen",
+                    "year": 1975,
+                    "youTubeId": "f3t9SfrfDZM"
+                },
+                {
+                    "title": "Born in the USA",
+                    "artist": "Bruce Springsteen",
+                    "year": 1984,
+                    "youTubeId": "lZD4ezDbbu4"
+                },
+                {
+                    "title": "Dancing in the Dark",
+                    "artist": "Bruce Springsteen",
+                    "year": 1984,
+                    "youTubeId": "129kuDCQtHs"
+                },
+                {
+                    "title": "Billie Jean",
+                    "artist": "Michael Jackson",
+                    "year": 1982,
+                    "youTubeId": "Zi_XLOBDo_Y"
+                },
+                {
+                    "title": "Beat It",
+                    "artist": "Michael Jackson",
+                    "year": 1982,
+                    "youTubeId": "oRdxUFDoQe0"
+                },
+                {
+                    "title": "Thriller",
+                    "artist": "Michael Jackson",
+                    "year": 1982,
+                    "youTubeId": "sOnqjkJTMaA"
+                },
+                {
+                    "title": "Smooth Criminal",
+                    "artist": "Michael Jackson",
+                    "year": 1988,
+                    "youTubeId": "h_D3VFfhvs4"
+                },
+                {
+                    "title": "Don't Stop Me Now",
+                    "artist": "Queen",
+                    "year": 1978,
+                    "youTubeId": "HgzGwKwLmgM"
+                }
+            ]
+        },
+        {
+            "_id": "68f527a2ec1ea2ad00a6faf1",
+            "ownerEmail": "gatik@yadav.com",
+            "name": "Gatiks Best",
+            "songs": [
+                {
+                    "title": "Lose Yourself",
+                    "artist": "Eminem",
+                    "year": 2002,
+                    "youTubeId": "_Yhyp-_hX2s"
+                },
+                {
+                    "title": "Stan",
+                    "artist": "Eminem",
+                    "year": 2000,
+                    "youTubeId": "gOMhN-hfMtY"
+                },
+                {
+                    "title": "Without Me",
+                    "artist": "Eminem",
+                    "year": 2002,
+                    "youTubeId": "YVkUvmDQ3HY"
+                },
+                {
+                    "title": "The Real Slim Shady",
+                    "artist": "Eminem",
+                    "year": 2000,
+                    "youTubeId": "eJO5HU_7_1w"
+                },
+                {
+                    "title": "Blinding Lights",
+                    "artist": "The Weeknd",
+                    "year": 2019,
+                    "youTubeId": "4NRXx6U8ABQ"
+                },
+                {
+                    "title": "Can't Feel My Face",
+                    "artist": "The Weeknd",
+                    "year": 2015,
+                    "youTubeId": "KEI4qSrkPAs"
+                },
+                {
+                    "title": "Starboy",
+                    "artist": "The Weeknd",
+                    "year": 2016,
+                    "youTubeId": "34Na4j8AVgA"
+                },
+                {
+                    "title": "The Hills",
+                    "artist": "The Weeknd",
+                    "year": 2015,
+                    "youTubeId": "yzTuBuRdAyA"
+                },
+                {
+                    "title": "God's Plan",
+                    "artist": "Drake",
+                    "year": 2018,
+                    "youTubeId": "xpVfcZ0ZcFM"
+                },
+                {
+                    "title": "Hotline Bling",
+                    "artist": "Drake",
+                    "year": 2015,
+                    "youTubeId": "uxpDa-c-4Mc"
+                },
+                {
+                    "title": "In My Feelings",
+                    "artist": "Drake",
+                    "year": 2018,
+                    "youTubeId": "DRS_PpOrUZ4"
+                },
+                {
+                    "title": "One Dance",
+                    "artist": "Drake",
+                    "year": 2016,
+                    "youTubeId": "kd-6aw99DpA"
+                },
+                {
+                    "title": "Feel So Close",
+                    "artist": "Calvin Harris",
+                    "year": 2011,
+                    "youTubeId": "dGghkjpNCQ8"
+                },
+                {
+                    "title": "We Found Love",
+                    "artist": "Calvin Harris ft. Rihanna",
+                    "year": 2011,
+                    "youTubeId": "tg00YEETFzg"
+                },
+                {
+                    "title": "Summer",
+                    "artist": "Calvin Harris",
+                    "year": 2014,
+                    "youTubeId": "ebXbLfLACGM"
+                },
+                {
+                    "title": "What Makes You Beautiful",
+                    "artist": "One Direction",
+                    "year": 2011,
+                    "youTubeId": "QJO3ROT-A4E"
+                },
+                {
+                    "title": "Story of My Life",
+                    "artist": "One Direction",
+                    "year": 2013,
+                    "youTubeId": "W-TE_Ys4iwM"
+                },
+                {
+                    "title": "Uptown Funk",
+                    "artist": "Bruno Mars",
+                    "year": 2014,
+                    "youTubeId": "OPf0YbXqDm0"
+                },
+                {
+                    "title": "Just the Way You Are",
+                    "artist": "Bruno Mars",
+                    "year": 2010,
+                    "youTubeId": "LjhCEhWiKXk"
+                },
+                {
+                    "title": "24K Magic",
+                    "artist": "Bruno Mars",
+                    "year": 2016,
+                    "youTubeId": "UqyT8IEBkvY"
+                }
+            ]
+        },
+        {
+            "_id": "68f527a3ec1ea2ad00a6faf2",
+            "ownerEmail": "gatik@yadav.com",
+            "name": "Hidden Treasures",
+            "songs": [
+                {
+                    "title": "Starman",
+                    "artist": "David Bowie",
+                    "year": 1972,
+                    "youTubeId": "t365MuktYQs"
+                },
+                {
+                    "title": "Stand by Me",
+                    "artist": "Ben E. King",
+                    "year": 1961,
+                    "youTubeId": "hwZNL7QVJjE"
+                },
+                {
+                    "title": "The Winner Takes It All",
+                    "artist": "ABBA",
+                    "year": 1980,
+                    "youTubeId": "92cwKCU8Z5c"
+                },
+                {
+                    "title": "COULD BE WRONG",
+                    "artist": "LOSTBOYJAY",
+                    "year": 2022,
+                    "youTubeId": "6Ptn3gTWX08"
+                },
+                {
+                    "title": "Break The Rules",
+                    "artist": "LUCØ",
+                    "year": 2025,
+                    "youTubeId": "vqtgVY8c86M"
+                },
+                {
+                    "title": "Your Love",
+                    "artist": "Frankie Knuckles",
+                    "year": 1987,
+                    "youTubeId": "LOLE1YE_oFQ"
+                },
+                {
+                    "title": "French Kiss",
+                    "artist": "Lil Louis",
+                    "year": 1989,
+                    "youTubeId": "3Y71iDvCYXA"
+                },
+                {
+                    "title": "Can You Feel It",
+                    "artist": "Mr. Fingers",
+                    "year": 1986,
+                    "youTubeId": "CGKEVil2S_Q"
+                },
+                {
+                    "title": "Move Your Body",
+                    "artist": "Marshall Jefferson",
+                    "year": 1986,
+                    "youTubeId": "QAR8cq5Bl94"
+                },
+                {
+                    "title": "Big Fun",
+                    "artist": "Inner City",
+                    "year": 1988,
+                    "youTubeId": "HcXVPK2v9pg"
+                },
+                {
+                    "title": "Good Life",
+                    "artist": "Inner City",
+                    "year": 1988,
+                    "youTubeId": "KhMX1ed8n-Y"
+                },
+                {
+                    "title": "Strings of Life",
+                    "artist": "Derrick May",
+                    "year": 1987,
+                    "youTubeId": "VvfkH0SH5tQ"
+                },
+                {
+                    "title": "No Way Back",
+                    "artist": "Adonis",
+                    "year": 1986,
+                    "youTubeId": "EDwjsGKtgSI"
+                },
+                {
+                    "title": "I Feel Love",
+                    "artist": "Donna Summer",
+                    "year": 1977,
+                    "youTubeId": "Nm-ISatLDG0"
+                },
+                {
+                    "title": "Blue Monday",
+                    "artist": "New Order",
+                    "year": 1983,
+                    "youTubeId": "FYH8DsU2WCk"
+                },
+                {
+                    "title": "Born Slippy",
+                    "artist": "Underworld",
+                    "year": 1996,
+                    "youTubeId": "iTFrCbQGyvM"
+                },
+                {
+                    "title": "Acid Tracks",
+                    "artist": "Phuture",
+                    "year": 1987,
+                    "youTubeId": "igNVdlXhKcI"
+                },
+                {
+                    "title": "Cafe del Mar",
+                    "artist": "Energy 52",
+                    "year": 1993,
+                    "youTubeId": "YQQ2StSwg_4"
+                },
+                {
+                    "title": "For an Angel",
+                    "artist": "Paul van Dyk",
+                    "year": 1994,
+                    "youTubeId": "ONzkhd3hvpQ"
+                },
+                {
+                    "title": "Sandstorm",
+                    "artist": "Darude",
+                    "year": 1999,
+                    "youTubeId": "y6120QOlsfU"
+                }
+            ]
+        }
+    ]
+}
