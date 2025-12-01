@@ -1,6 +1,6 @@
-import React, { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react"
 import { useHistory } from 'react-router-dom'
-import authRequestSender from './requests'
+import api from './requests'
 
 const AuthContext = createContext();
 console.log("create AuthContext: " + AuthContext);
@@ -8,22 +8,21 @@ console.log("create AuthContext: " + AuthContext);
 // THESE ARE ALL THE TYPES OF UPDATES TO OUR AUTH STATE THAT CAN BE PROCESSED
 export const AuthActionType = {
     GET_LOGGED_IN: "GET_LOGGED_IN",
+    REGISTER_USER: "REGISTER_USER",
     LOGIN_USER: "LOGIN_USER",
     LOGOUT_USER: "LOGOUT_USER",
-    REGISTER_USER: "REGISTER_USER"
+    LOGIN_GUEST: "LOGIN_GUEST"  //  ADD THIS
 }
 
 function AuthContextProvider(props) {
     const [auth, setAuth] = useState({
         user: null,
         loggedIn: false,
-        errorMessage: null
+        isGuest: false  //  ADD THIS
     });
     const history = useHistory();
 
-    useEffect(() => {
-        auth.getLoggedIn();
-    }, []);
+    useContext(AuthContext);
 
     const authReducer = (action) => {
         const { type, payload } = action;
@@ -32,28 +31,35 @@ function AuthContextProvider(props) {
                 return setAuth({
                     user: payload.user,
                     loggedIn: payload.loggedIn,
-                    errorMessage: null
+                    isGuest: false  //  Reset guest mode on regular login
                 });
+            }
+            case AuthActionType.REGISTER_USER: {
+                return setAuth({
+                    user: payload.user,
+                    loggedIn: true,
+                    isGuest: false
+                })
             }
             case AuthActionType.LOGIN_USER: {
                 return setAuth({
                     user: payload.user,
-                    loggedIn: payload.loggedIn,
-                    errorMessage: payload.errorMessage
+                    loggedIn: true,
+                    isGuest: false
                 })
             }
             case AuthActionType.LOGOUT_USER: {
                 return setAuth({
                     user: null,
                     loggedIn: false,
-                    errorMessage: null
+                    isGuest: false  // Reset guest mode on logout
                 })
             }
-            case AuthActionType.REGISTER_USER: {
+            case AuthActionType.LOGIN_GUEST: {  //  ADD THIS ENTIRE CASE
                 return setAuth({
-                    user: payload.user,
-                    loggedIn: payload.loggedIn,
-                    errorMessage: payload.errorMessage
+                    user: null,
+                    loggedIn: false,
+                    isGuest: true
                 })
             }
             default:
@@ -61,100 +67,107 @@ function AuthContextProvider(props) {
         }
     }
 
-    auth.getLoggedIn = async function () {
-        const response = await authRequestSender.getLoggedIn();
-        if (response.status === 200) {
-            authReducer({
-                type: AuthActionType.GET_LOGGED_IN,
-                payload: {
-                    loggedIn: response.data.loggedIn,
-                    user: response.data.user
+    const authAPI = {  //  RENAMED to avoid conflict
+        user: auth.user,
+        loggedIn: auth.loggedIn,
+        isGuest: auth.isGuest,  //  ADD THIS
+        getLoggedIn() {
+            api.getLoggedIn().then(function (response) {
+                if (response.status === 200) {
+                    authReducer({
+                        type: AuthActionType.GET_LOGGED_IN,
+                        payload: {
+                            loggedIn: response.data.loggedIn,
+                            user: response.data.user
+                        }
+                    });
                 }
             });
-        }
-    }
-
-    auth.registerUser = async function(firstName, lastName, email, password, passwordVerify) {
-        console.log("REGISTERING USER");
-        try{   
-            const response = await authRequestSender.registerUser(firstName, lastName, email, password, passwordVerify);   
-            if (response.status === 200) {
-                console.log("Registered Sucessfully");
-                authReducer({
-                    type: AuthActionType.REGISTER_USER,
-                    payload: {
-                        user: response.data.user,
-                        loggedIn: true,
-                        errorMessage: null
-                    }
-                })
-                history.push("/login");
-                console.log("NOW WE LOGIN");
-                auth.loginUser(email, password);
-                console.log("LOGGED IN");
-            }
-        } catch(error){
-            authReducer({
-                type: AuthActionType.REGISTER_USER,
-                payload: {
-                    user: auth.user,
-                    loggedIn: false,
-                    errorMessage: error.response.data.errorMessage
+        },
+        registerUser(userData, store) {
+            //  FIXED: Extract individual fields from userData object
+            api.registerUser(
+                userData.firstName, 
+                userData.lastName, 
+                userData.email, 
+                userData.password, 
+                userData.passwordVerify
+            ).then(function (response) {
+                if (response.status === 200) {
+                    authReducer({
+                        type: AuthActionType.REGISTER_USER,
+                        payload: {
+                            user: response.data.user
+                        }
+                    })
+                    history.push("/");
+                    store.loadIdNamePairs();
                 }
-            })
-        }
-    }
-
-    auth.loginUser = async function(email, password) {
-        try{
-            const response = await authRequestSender.loginUser(email, password);
-            if (response.status === 200) {
-                authReducer({
-                    type: AuthActionType.LOGIN_USER,
-                    payload: {
-                        user: response.data.user,
-                        loggedIn: true,
-                        errorMessage: null
-                    }
-                })
-                history.push("/");
-            }
-        } catch(error){
-            authReducer({
-                type: AuthActionType.LOGIN_USER,
-                payload: {
-                    user: auth.user,
-                    loggedIn: false,
-                    errorMessage: error.response.data.errorMessage
+            }).catch(function (error) {
+                console.error('Registration error:', error);
+                if (error.response) {
+                    console.error('Error response:', error.response);
                 }
-            })
-        }
-    }
-
-    auth.logoutUser = async function() {
-        const response = await authRequestSender.logoutUser();
-        if (response.status === 200) {
-            authReducer( {
-                type: AuthActionType.LOGOUT_USER,
+            });
+        },
+        loginUser(userData, store) {    //  FIXED: Removed extra "l" from "lloginUser"
+            // DEBUG: Log what we're sending
+            console.log("🔍 SENDING LOGIN DATA:", userData);
+            console.log("🔍 Email:", userData.email);
+            console.log("🔍 Password:", userData.password ? "***" : "MISSING");
+            
+            api.loginUser(userData.email, userData.password).then(function (response) {
+                console.log(" LOGIN SUCCESS:", response);
+                if (response.status === 200) {
+                    authReducer({
+                        type: AuthActionType.LOGIN_USER,
+                        payload: {
+                            user: response.data.user
+                        }
+                    })
+                    history.push("/");
+                    store.loadIdNamePairs();
+                }
+            }).catch(function (error) {
+                console.error('❌ LOGIN FAILED:', error);
+                if (error.response) {
+                    console.error('🚨 SERVER ERROR:', JSON.stringify(error.response.data, null, 2));
+                }
+            });
+        },
+        logoutUser() {
+            api.logoutUser().then(function (response) {
+                if (response.status === 200) {
+                    authReducer({
+                        type: AuthActionType.LOGOUT_USER,
+                        payload: null
+                    })
+                    history.push("/");
+                }
+            });
+        },
+        //  ADD THIS ENTIRE NEW FUNCTION
+        loginGuest() {
+            authReducer({
+                type: AuthActionType.LOGIN_GUEST,
                 payload: null
-            })
+            });
             history.push("/");
+        },
+        getUserInitials() {
+            let initials = "";
+            if (auth.user) {
+                initials += auth.user.firstName.charAt(0);
+                initials += auth.user.lastName.charAt(0);
+            }
+            console.log("user initials: " + initials);
+            return initials;
         }
-    }
-
-    auth.getUserInitials = function() {
-        let initials = "";
-        if (auth.user) {
-            initials += auth.user.firstName.charAt(0);
-            initials += auth.user.lastName.charAt(0);
-        }
-        console.log("user initials: " + initials);
-        return initials;
     }
 
     return (
         <AuthContext.Provider value={{
-            auth
+            auth: authAPI  //  FIXED - use authAPI
         }}>
             {props.children}
         </AuthContext.Provider>
@@ -162,4 +175,4 @@ function AuthContextProvider(props) {
 }
 
 export default AuthContext;
-export { AuthContextProvider };
+export { AuthContextProvider }
