@@ -1,6 +1,5 @@
 import { useContext } from 'react';
 import AuthContext from '../auth'
-import { GlobalStoreContext } from '../store'  // 🔥 ADD THIS LINE
 import MUIErrorModal from './MUIErrorModal'
 import Copyright from './Copyright'
 
@@ -17,20 +16,15 @@ import Typography from '@mui/material/Typography';
 
 export default function LoginScreen() {
     const { auth } = useContext(AuthContext);
-    const { store } = useContext(GlobalStoreContext);  // 🔥 ADD THIS LINE
 
     const handleSubmit = (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        
-        // 🔥 FIXED: Pass data as an object, and include the store
-        const userData = {
-            email: formData.get('email'),
-            password: formData.get('password')
-        };
-        
-        console.log("🔍 LoginScreen sending:", userData); // Debug log
-        auth.loginUser(userData, store);  // Now passing correct format
+        auth.loginUser(
+            formData.get('email'),
+            formData.get('password')
+        );
+
     };
 
     let modalJSX = "";
