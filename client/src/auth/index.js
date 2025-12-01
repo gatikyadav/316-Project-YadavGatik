@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react"
+import React, { createContext, useState, useEffect } from "react";
 import { useHistory } from 'react-router-dom'
 import api from './requests'
 
@@ -11,18 +11,34 @@ export const AuthActionType = {
     REGISTER_USER: "REGISTER_USER",
     LOGIN_USER: "LOGIN_USER",
     LOGOUT_USER: "LOGOUT_USER",
-    LOGIN_GUEST: "LOGIN_GUEST"  //  ADD THIS
+    LOGIN_GUEST: "LOGIN_GUEST",
+    SET_ERROR: "SET_ERROR"
 }
 
 function AuthContextProvider(props) {
     const [auth, setAuth] = useState({
         user: null,
         loggedIn: false,
-        isGuest: false  //  ADD THIS
+        isGuest: false,
+        errorMessage: null
     });
     const history = useHistory();
 
-    useContext(AuthContext);
+    useEffect(() => {
+        api.getLoggedIn().then(response => {
+            if (response.data.loggedIn) {
+                authReducer({
+                    type: AuthActionType.GET_LOGGED_IN,
+                    payload: {
+                        loggedIn: response.data.loggedIn,
+                        user: response.data.user
+                    }
+                });
+            }
+        }).catch(err => {
+            console.log("Not logged in");
+        });
+    }, []);
 
     const authReducer = (action) => {
         const { type, payload } = action;
@@ -31,35 +47,47 @@ function AuthContextProvider(props) {
                 return setAuth({
                     user: payload.user,
                     loggedIn: payload.loggedIn,
-                    isGuest: false  //  Reset guest mode on regular login
+                    isGuest: false,
+                    errorMessage: null
                 });
             }
             case AuthActionType.REGISTER_USER: {
+                // Per spec: Registration does NOT log user in
                 return setAuth({
-                    user: payload.user,
-                    loggedIn: true,
-                    isGuest: false
+                    user: null,
+                    loggedIn: false,
+                    isGuest: false,
+                    errorMessage: null
                 })
             }
             case AuthActionType.LOGIN_USER: {
                 return setAuth({
                     user: payload.user,
                     loggedIn: true,
-                    isGuest: false
+                    isGuest: false,
+                    errorMessage: null
                 })
             }
             case AuthActionType.LOGOUT_USER: {
                 return setAuth({
                     user: null,
                     loggedIn: false,
-                    isGuest: false  // Reset guest mode on logout
+                    isGuest: false,
+                    errorMessage: null
                 })
             }
-            case AuthActionType.LOGIN_GUEST: {  //  ADD THIS ENTIRE CASE
+            case AuthActionType.LOGIN_GUEST: {
                 return setAuth({
                     user: null,
                     loggedIn: false,
-                    isGuest: true
+                    isGuest: true,
+                    errorMessage: null
+                })
+            }
+            case AuthActionType.SET_ERROR: {
+                return setAuth({
+                    ...auth,
+                    errorMessage: payload.errorMessage
                 })
             }
             default:
@@ -67,13 +95,16 @@ function AuthContextProvider(props) {
         }
     }
 
-    const authAPI = {  //  RENAMED to avoid conflict
+    // Create the auth API object
+    const authAPI = {
         user: auth.user,
         loggedIn: auth.loggedIn,
-        isGuest: auth.isGuest,  //  ADD THIS
+        isGuest: auth.isGuest,
+        errorMessage: auth.errorMessage,
+
         getLoggedIn() {
-            api.getLoggedIn().then(function (response) {
-                if (response.status === 200) {
+            api.getLoggedIn().then(response => {
+                if (response.data.loggedIn) {
                     authReducer({
                         type: AuthActionType.GET_LOGGED_IN,
                         payload: {
@@ -84,40 +115,44 @@ function AuthContextProvider(props) {
                 }
             });
         },
-        registerUser(userData, store) {
-            //  FIXED: Extract individual fields from userData object
-            api.registerUser(
-                userData.firstName, 
-                userData.lastName, 
-                userData.email, 
-                userData.password, 
-                userData.passwordVerify
-            ).then(function (response) {
+
+        /*
+            Register User - Use Case 2.1
+            
+            Per specification:
+            - Takes userName, email, password, passwordVerify, avatarImage
+            - Does NOT auto-login after registration
+            - Returns success/failure for frontend to handle redirect to login
+        */
+        async registerUser(userName, email, password, passwordVerify, avatarImage) {
+            try {
+                const response = await api.registerUser(
+                    userName,
+                    email,
+                    password,
+                    passwordVerify,
+                    avatarImage
+                );
+                
                 if (response.status === 200) {
                     authReducer({
                         type: AuthActionType.REGISTER_USER,
-                        payload: {
-                            user: response.data.user
-                        }
-                    })
-                    history.push("/");
-                    store.loadIdNamePairs();
+                        payload: {}
+                    });
+                    return { success: true };
                 }
-            }).catch(function (error) {
+            } catch (error) {
                 console.error('Registration error:', error);
-                if (error.response) {
-                    console.error('Error response:', error.response);
-                }
-            });
+                const errorMessage = error.errorMessage || 'Registration failed';
+                return { success: false, error: errorMessage };
+            }
         },
-        loginUser(userData, store) {    //  FIXED: Removed extra "l" from "lloginUser"
-            // DEBUG: Log what we're sending
+
+        loginUser(userData, store) {
             console.log("🔍 SENDING LOGIN DATA:", userData);
-            console.log("🔍 Email:", userData.email);
-            console.log("🔍 Password:", userData.password ? "***" : "MISSING");
             
             api.loginUser(userData.email, userData.password).then(function (response) {
-                console.log(" LOGIN SUCCESS:", response);
+                console.log("✅ LOGIN SUCCESS:", response);
                 if (response.status === 200) {
                     authReducer({
                         type: AuthActionType.LOGIN_USER,
@@ -126,15 +161,24 @@ function AuthContextProvider(props) {
                         }
                     })
                     history.push("/");
-                    store.loadIdNamePairs();
+                    if (store) store.loadIdNamePairs();
                 }
             }).catch(function (error) {
                 console.error('❌ LOGIN FAILED:', error);
-                if (error.response) {
-                    console.error('🚨 SERVER ERROR:', JSON.stringify(error.response.data, null, 2));
+                // Extract error message from response data
+                let errorMsg = 'Login failed';
+                if (error.response && error.response.data && error.response.data.errorMessage) {
+                    errorMsg = error.response.data.errorMessage;
+                } else if (error.errorMessage) {
+                    errorMsg = error.errorMessage;
                 }
+                authReducer({
+                    type: AuthActionType.SET_ERROR,
+                    payload: { errorMessage: errorMsg }
+                });
             });
         },
+
         logoutUser() {
             api.logoutUser().then(function (response) {
                 if (response.status === 200) {
@@ -146,7 +190,7 @@ function AuthContextProvider(props) {
                 }
             });
         },
-        //  ADD THIS ENTIRE NEW FUNCTION
+
         loginGuest() {
             authReducer({
                 type: AuthActionType.LOGIN_GUEST,
@@ -154,20 +198,69 @@ function AuthContextProvider(props) {
             });
             history.push("/");
         },
+
+        // Get user initials from userName for avatar display
         getUserInitials() {
             let initials = "";
-            if (auth.user) {
-                initials += auth.user.firstName.charAt(0);
-                initials += auth.user.lastName.charAt(0);
+            if (auth.user && auth.user.userName) {
+                // Get first two characters of userName, uppercase
+                initials = auth.user.userName.substring(0, 2).toUpperCase();
             }
             console.log("user initials: " + initials);
             return initials;
+        },
+
+        // Get the user's avatar image (base64 string or null)
+        getUserAvatar() {
+            if (auth.user && auth.user.avatarImage) {
+                return auth.user.avatarImage;
+            }
+            return null;
+        },
+
+        /*
+            Update User - Use Case 2.3
+            
+            Per specification:
+            - User can change userName, password, avatar
+            - User cannot change email
+            - Returns to previous screen after completion
+        */
+        async updateUser(updateData) {
+            try {
+                const response = await api.updateUser(updateData);
+                
+                if (response.status === 200) {
+                    // Update local auth state with new user data
+                    authReducer({
+                        type: AuthActionType.LOGIN_USER,
+                        payload: {
+                            user: response.data.user
+                        }
+                    });
+                    return { success: true };
+                }
+            } catch (error) {
+                console.error('Update user error:', error);
+                let errorMsg = 'Update failed';
+                if (error.response && error.response.data && error.response.data.errorMessage) {
+                    errorMsg = error.response.data.errorMessage;
+                }
+                return { success: false, error: errorMsg };
+            }
+        },
+
+        clearError() {
+            setAuth({
+                ...auth,
+                errorMessage: null
+            });
         }
     }
 
     return (
         <AuthContext.Provider value={{
-            auth: authAPI  //  FIXED - use authAPI
+            auth: authAPI
         }}>
             {props.children}
         </AuthContext.Provider>
@@ -175,4 +268,4 @@ function AuthContextProvider(props) {
 }
 
 export default AuthContext;
-export { AuthContextProvider }
+export { AuthContextProvider };

@@ -1,25 +1,33 @@
 import { useContext, useState } from 'react';
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import AuthContext from '../auth';
 import { GlobalStoreContext } from '../store'
 
 import EditToolbar from './EditToolbar'
 
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import HomeIcon from '@mui/icons-material/Home';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import Avatar from '@mui/material/Avatar';
 
 export default function AppBanner() {
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
     const [anchorEl, setAnchorEl] = useState(null);
     const isMenuOpen = Boolean(anchorEl);
+    const location = useLocation();
+
+    // HIDE BANNER ON SPLASH SCREEN, LOGIN, REGISTER, and EDIT ACCOUNT pages (when not logged in/guest)
+    const hideBannerPaths = ['/', '/login/', '/register/', '/edit-account/'];
+    if (hideBannerPaths.includes(location.pathname) && !auth.loggedIn && !auth.isGuest) {
+        return null;
+    }
 
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -39,32 +47,13 @@ export default function AppBanner() {
     }
 
     const menuId = 'primary-search-account-menu';
-    const loggedOutMenu = (
-        <Menu
-            anchorEl={anchorEl}
-            anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-            id={menuId}
-            keepMounted
-            transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-            open={isMenuOpen}
-            onClose={handleMenuClose}
-        >
-            <MenuItem onClick={handleMenuClose}><Link to='/login/'>Login</Link></MenuItem>
-            <MenuItem onClick={handleMenuClose}><Link to='/register/'>Create New Account</Link></MenuItem>
-        </Menu>
-    );
     
-    const loggedInMenu = 
+    // Menu for logged in users - includes Edit Account option per spec
+    const loggedInMenu = (
         <Menu
             anchorEl={anchorEl}
             anchorOrigin={{
-                vertical: 'top',
+                vertical: 'bottom',
                 horizontal: 'right',
             }}
             id={menuId}
@@ -76,15 +65,19 @@ export default function AppBanner() {
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
+            <MenuItem component={Link} to='/edit-account/' onClick={handleMenuClose}>
+                Edit Account
+            </MenuItem>
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
         </Menu>
+    );
 
-    //  NEW: Guest menu
+    // Menu for guests - can login or create account
     const guestMenu = (
         <Menu
             anchorEl={anchorEl}
             anchorOrigin={{
-                vertical: 'top',
+                vertical: 'bottom',
                 horizontal: 'right',
             }}
             id={menuId}
@@ -96,82 +89,102 @@ export default function AppBanner() {
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
-            <MenuItem onClick={handleMenuClose}><Link to='/login/'>Login</Link></MenuItem>
-            <MenuItem onClick={handleMenuClose}><Link to='/register/'>Create New Account</Link></MenuItem>
+            <MenuItem component={Link} to='/login/' onClick={handleMenuClose}>
+                Login
+            </MenuItem>
+            <MenuItem component={Link} to='/register/' onClick={handleMenuClose}>
+                Create Account
+            </MenuItem>
         </Menu>
     );
 
     let editToolbar = "";
-    let menu = loggedOutMenu;
+    let menu = guestMenu;
     
-    //  UPDATED: Menu logic for guest mode
     if (auth.loggedIn) {
         menu = loggedInMenu;
         if (store.currentList) {
             editToolbar = <EditToolbar />;
         }
-    } else if (auth.isGuest) {
-        menu = guestMenu;
     }
     
     function getAccountMenu(loggedIn, isGuest) {
         if (loggedIn) {
-            let userInitials = auth.getUserInitials();
-            console.log("userInitials: " + userInitials);
-            return <div>{userInitials}</div>;
+            // Check if user has an avatar image
+            const avatarImage = auth.getUserAvatar ? auth.getUserAvatar() : null;
+            
+            if (avatarImage) {
+                // Show avatar image
+                return (
+                    <Avatar
+                        src={avatarImage}
+                        sx={{ 
+                            width: 36, 
+                            height: 36
+                        }}
+                    />
+                );
+            } else {
+                // Show initials from userName
+                let userInitials = auth.getUserInitials();
+                return (
+                    <Box sx={{ 
+                        width: 36, 
+                        height: 36, 
+                        borderRadius: '50%', 
+                        backgroundColor: 'rgba(255,255,255,0.2)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.9rem',
+                        fontWeight: 'bold'
+                    }}>
+                        {userInitials}
+                    </Box>
+                );
+            }
         } else if (isGuest) {
-            return <div>Guest</div>;
+            return <AccountCircle sx={{ fontSize: 36 }} />;
         } else {
-            return <AccountCircle />;
+            return <AccountCircle sx={{ fontSize: 36 }} />;
         }
     }
 
-    //  ADD THIS DEBUG CODE
-    console.log("🔍 AppBanner Debug:", {
-        "auth.loggedIn": auth.loggedIn,
-        "auth.isGuest": auth.isGuest, 
-        "should show button": (auth.loggedIn || auth.isGuest),
-        "full auth object": auth
-    });
-
     return (
-        <Box sx={{flexGrow: 1}}>
-            <AppBar position="static">
+        <Box sx={{ flexGrow: 1 }}>
+            <AppBar 
+                position="static" 
+                sx={{ 
+                    backgroundColor: '#e020a0', // Magenta to match spec
+                    boxShadow: 'none'
+                }}
+            >
                 <Toolbar>
-                    <Typography                        
-                        variant="h4"
-                        noWrap
-                        component="div"
-                        sx={{ display: { xs: 'none', sm: 'block' } }}                        
+                    {/* Home Button */}
+                    <IconButton
+                        component={Link}
+                        to="/"
+                        onClick={handleHouseClick}
+                        sx={{ 
+                            color: 'white',
+                            backgroundColor: 'rgba(255,255,255,0.2)',
+                            borderRadius: '50%',
+                            mr: 2,
+                            '&:hover': {
+                                backgroundColor: 'rgba(255,255,255,0.3)'
+                            }
+                        }}
                     >
-                        <Link onClick={handleHouseClick} style={{ textDecoration: 'none', color: 'white' }} to='/'>⌂</Link>
-                    </Typography>
+                        <HomeIcon />
+                    </IconButton>
                     
                     {/* Navigation Links */}
-                    <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', ml: 3 }}>
-                        {/*  TEMPORARY TEST: Show button always with red background */}
-                        <Button 
-                            component={Link} 
-                            to="/songs/" 
-                            color="inherit"
-                            sx={{ 
-                                mr: 2,
-                                fontSize: '1rem',
-                                textTransform: 'none',
-                                backgroundColor: 'red', // Make it red so we can see it
-                                '&:hover': {
-                                    backgroundColor: 'darkred'
-                                }
-                            }}
-                        >
-                            Songs Catalog (TEST)
-                        </Button>
-                        
-                        {/* My Playlists - Only for logged in users (NOT guests) */}
-                        {auth.loggedIn && (
-                            <Button
-                                component={Link}
-                                to="/"
+                    <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
+                        {/* Playlists - Available to all users */}
+                        {(auth.loggedIn || auth.isGuest) && (
+                            <Button 
+                                component={Link} 
+                                to="/" 
                                 color="inherit"
                                 sx={{ 
                                     mr: 2,
@@ -182,34 +195,49 @@ export default function AppBanner() {
                                     }
                                 }}
                             >
-                                My Playlists
+                                Playlists
+                            </Button>
+                        )}
+
+                        {/* Songs Catalog - Available to all users */}
+                        {(auth.loggedIn || auth.isGuest) && (
+                            <Button 
+                                component={Link} 
+                                to="/songs/" 
+                                color="inherit"
+                                sx={{ 
+                                    mr: 2,
+                                    fontSize: '1rem',
+                                    textTransform: 'none',
+                                    '&:hover': {
+                                        backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                                    }
+                                }}
+                            >
+                                Songs Catalog
                             </Button>
                         )}
                         
                         {editToolbar}
                     </Box>
                     
-                    {/*  UPDATED: Account section - Show for logged in users OR guests */}
+                    {/* Account section */}
                     {(auth.loggedIn || auth.isGuest) && (
-                        <Box sx={{ height: "90px", display: { xs: 'none', md: 'flex' } }}>
-                            <IconButton
-                                size="large"
-                                edge="end"
-                                aria-label="account of current user"
-                                aria-controls={menuId}
-                                aria-haspopup="true"
-                                onClick={handleProfileMenuOpen}
-                                color="inherit"
-                            >
-                                { getAccountMenu(auth.loggedIn, auth.isGuest) }
-                            </IconButton>
-                        </Box>
+                        <IconButton
+                            size="large"
+                            edge="end"
+                            aria-label="account of current user"
+                            aria-controls={menuId}
+                            aria-haspopup="true"
+                            onClick={handleProfileMenuOpen}
+                            color="inherit"
+                        >
+                            { getAccountMenu(auth.loggedIn, auth.isGuest) }
+                        </IconButton>
                     )}
                 </Toolbar>
             </AppBar>
-            {
-                menu
-            }
+            {menu}
         </Box>
     );
 }

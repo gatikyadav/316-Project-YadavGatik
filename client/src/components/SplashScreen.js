@@ -1,11 +1,14 @@
 import { useContext } from 'react';
 import AuthContext from '../auth';
-import { Button, Typography, Box } from '@mui/material';
+import { Button, Box, IconButton } from '@mui/material';
 import { Link } from 'react-router-dom';
+import HomeIcon from '@mui/icons-material/Home';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import QueueMusicIcon from '@mui/icons-material/QueueMusic';
 
 /*
     This React component represents the Splash Screen that welcomes 
-    users to the application.
+    users to the application. Matches Figure 3.1 from specification.
     
     @author Gatik Yadav
 */
@@ -13,94 +16,142 @@ export default function SplashScreen() {
     const { auth } = useContext(AuthContext);
     
     return (
-        <div id="splash-screen">
+        <Box 
+            sx={{
+                width: '100%',
+                height: '100vh',
+                backgroundColor: '#f8e0f0', // Light pink background
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: 4
+            }}
+        >
+            {/* Main Container */}
             <Box 
                 sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: '100vh',
-                    textAlign: 'center',
-                    padding: 2,
-                    backgroundColor: '#1976d2',  // Blue background
-                    color: 'white'
+                    width: '100%',
+                    maxWidth: 700,
+                    backgroundColor: '#f8e0f0',
+                    borderRadius: 2,
+                    overflow: 'hidden',
+                    boxShadow: 3
                 }}
             >
-                {/* App Title */}
-                <Typography variant="h1" sx={{ mb: 2, fontWeight: 'bold', fontSize: '4rem' }}>
-                    Playlister
-                </Typography>
-                
-                <Typography variant="h5" sx={{ mb: 4, opacity: 0.9 }}>
-                    Create and manage your music playlists
-                </Typography>
-
-                {/* Action Buttons */}
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 4 }}>
-                    <Button
-                        component={Link}
-                        to="/login/"
-                        variant="contained"
-                        size="large"
-                        sx={{ 
-                            minWidth: 250,
-                            fontSize: '1.2rem',
-                            py: 1.5,
-                            backgroundColor: 'white',
-                            color: 'primary.main',
-                            '&:hover': {
-                                backgroundColor: '#f5f5f5'
-                            }
-                        }}
-                    >
-                        Login
-                    </Button>
-
-                    <Button
-                        component={Link}
-                        to="/register/"
-                        variant="outlined"
-                        size="large"
-                        sx={{ 
-                            minWidth: 250,
-                            fontSize: '1.2rem',
-                            py: 1.5,
-                            borderColor: 'white',
-                            color: 'white',
-                            '&:hover': {
-                                borderColor: '#f5f5f5',
-                                backgroundColor: 'rgba(255, 255, 255, 0.1)'
-                            }
-                        }}
-                    >
-                        Create Account
-                    </Button>
-
-                    {/* NEW GUEST BUTTON */}
-                    <Button
-                        onClick={auth.loginGuest}
-                        variant="text"
-                        size="large"
-                        sx={{ 
-                            minWidth: 250,
-                            fontSize: '1.1rem',
-                            py: 1.5,
-                            color: 'rgba(255, 255, 255, 0.8)',
-                            '&:hover': {
-                                color: 'white',
-                                backgroundColor: 'rgba(255, 255, 255, 0.1)'
-                            }
-                        }}
-                    >
-                        Continue as Guest
-                    </Button>
+                {/* Header Bar - Magenta */}
+                <Box 
+                    sx={{
+                        backgroundColor: '#e020a0', // Magenta
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        px: 2,
+                        py: 1
+                    }}
+                >
+                    <IconButton sx={{ color: 'white', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: '50%' }}>
+                        <HomeIcon />
+                    </IconButton>
+                    <IconButton sx={{ color: 'white' }}>
+                        <AccountCircleIcon fontSize="large" />
+                    </IconButton>
                 </Box>
 
-                <Typography variant="body2" sx={{ mt: 3, opacity: 0.7, maxWidth: 400 }}>
-                    Guests can browse the songs catalog but cannot create or manage playlists
-                </Typography>
+                {/* Content Area - Cream/Beige */}
+                <Box 
+                    sx={{
+                        backgroundColor: '#f5f5dc', // Cream/beige
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        py: 8,
+                        px: 4,
+                        minHeight: 400
+                    }}
+                >
+                    {/* Title */}
+                    <Box 
+                        sx={{ 
+                            fontSize: '2.5rem', 
+                            fontWeight: 400,
+                            color: '#555',
+                            mb: 3,
+                            fontFamily: 'serif'
+                        }}
+                    >
+                        The Playlister
+                    </Box>
+
+                    {/* Music Note Logo */}
+                    <Box sx={{ mb: 6 }}>
+                        <QueueMusicIcon sx={{ fontSize: 120, color: '#333' }} />
+                    </Box>
+
+                    {/* Action Buttons */}
+                    <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
+                        <Button
+                            onClick={auth.loginGuest}
+                            variant="contained"
+                            sx={{ 
+                                backgroundColor: '#333',
+                                color: 'white',
+                                textTransform: 'none',
+                                px: 3,
+                                py: 1,
+                                fontSize: '0.9rem',
+                                borderRadius: 1,
+                                '&:hover': {
+                                    backgroundColor: '#555'
+                                }
+                            }}
+                        >
+                            Continue as Guest
+                        </Button>
+
+                        <Button
+                            component={Link}
+                            to="/login/"
+                            variant="contained"
+                            sx={{ 
+                                backgroundColor: '#555',
+                                color: 'white',
+                                textTransform: 'none',
+                                px: 4,
+                                py: 1,
+                                fontSize: '0.9rem',
+                                borderRadius: 1,
+                                border: '2px solid #333',
+                                '&:hover': {
+                                    backgroundColor: '#666'
+                                }
+                            }}
+                        >
+                            Login
+                        </Button>
+
+                        <Button
+                            component={Link}
+                            to="/register/"
+                            variant="contained"
+                            sx={{ 
+                                backgroundColor: '#333',
+                                color: 'white',
+                                textTransform: 'none',
+                                px: 3,
+                                py: 1,
+                                fontSize: '0.9rem',
+                                borderRadius: 1,
+                                '&:hover': {
+                                    backgroundColor: '#555'
+                                }
+                            }}
+                        >
+                            Create Account
+                        </Button>
+                    </Box>
+                </Box>
             </Box>
-        </div>
+        </Box>
     );
 }

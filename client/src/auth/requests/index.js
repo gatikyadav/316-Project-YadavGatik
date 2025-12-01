@@ -1,9 +1,8 @@
 /*
     This is our http api for all things auth, which we use to 
-    send authorization requests to our back-end API. Note we're 
-    using the native Fetch API, which is a browser standard for 
-    making HTTP requests. Fetch is Promise-based and provides 
-    good control over request configuration.
+    send authorization requests to our back-end API.
+    
+    Updated for new schema: userName (no firstName/lastName)
     
     @author McKilla Gorilla
     @author Gatik Yadav
@@ -14,7 +13,7 @@ const BASE_URL = 'http://localhost:4000/auth';
 // Helper function to handle fetch requests with Axios-compatible response format
 const fetchWithConfig = async (url, options = {}) => {
     const config = {
-        credentials: 'include', // This replaces axios.defaults.withCredentials = true
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
             ...options.headers
@@ -69,21 +68,16 @@ const fetchWithConfig = async (url, options = {}) => {
     }
 };
 
-// THESE ARE ALL THE REQUESTS WE'LL BE MAKING, ALL REQUESTS HAVE A
-// REQUEST METHOD (like get) AND PATH (like /register). SOME ALSO
-// REQUIRE AN id SO THAT THE SERVER KNOWS ON WHICH LIST TO DO ITS
-// WORK, AND SOME REQUIRE DATA, WHICH WE WILL FORMAT HERE, FOR WHEN
-// WE NEED TO PUT THINGS INTO THE DATABASE OR IF WE HAVE SOME
-// CUSTOM FILTERS FOR QUERIES
+// NOTE: Removed trailing slashes to match server routes exactly
 
 export const getLoggedIn = () => {
-    return fetchWithConfig('/loggedIn/', {
+    return fetchWithConfig('/loggedIn', {
         method: 'GET'
     });
 };
 
 export const loginUser = (email, password) => {
-    return fetchWithConfig('/login/', {
+    return fetchWithConfig('/login', {
         method: 'POST',
         body: JSON.stringify({
             email: email,
@@ -93,21 +87,30 @@ export const loginUser = (email, password) => {
 };
 
 export const logoutUser = () => {
-    return fetchWithConfig('/logout/', {
+    return fetchWithConfig('/logout', {
         method: 'GET'
     });
 };
 
-export const registerUser = (firstName, lastName, email, password, passwordVerify) => {
-    return fetchWithConfig('/register/', {
+// UPDATED: Use userName instead of firstName/lastName
+export const registerUser = (userName, email, password, passwordVerify, avatarImage) => {
+    return fetchWithConfig('/register', {
         method: 'POST',
         body: JSON.stringify({
-            firstName: firstName,
-            lastName: lastName,
+            userName: userName,
             email: email,
             password: password,
-            passwordVerify: passwordVerify
+            passwordVerify: passwordVerify,
+            avatarImage: avatarImage || null
         })
+    });
+};
+
+// UPDATE USER - Use Case 2.3
+export const updateUser = (updateData) => {
+    return fetchWithConfig('/update', {
+        method: 'PUT',
+        body: JSON.stringify(updateData)
     });
 };
 
@@ -115,7 +118,8 @@ const apis = {
     getLoggedIn,
     registerUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    updateUser
 }
 
 export default apis

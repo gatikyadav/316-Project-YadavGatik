@@ -23,12 +23,12 @@ import {
 } from '@mui/icons-material'
 
 /*
-    This React component displays the Playlists page with vertical layout
-    matching the Playlister specification exactly.
+    This React component displays the Playlists page.
+    Works for both logged-in users and guests.
+    Guests can browse/search/play but cannot create/edit.
     
     @author Gatik Yadav
 */
-console.log(" VERTICAL LAYOUT LOADED SUCCESSFULLY!");
 
 const HomeScreen = () => {
     const { store } = useContext(GlobalStoreContext);
@@ -45,13 +45,16 @@ const HomeScreen = () => {
 
     // Sort states
     const [sortBy, setSortBy] = useState('listens');
-    const [sortOrder, setSortOrder] = useState('desc'); // Default to Hi-Lo like in spec
+    const [sortOrder, setSortOrder] = useState('desc');
     
     // Filtered results
     const [filteredPlaylists, setFilteredPlaylists] = useState([]);
 
     useEffect(() => {
-        store.loadIdNamePairs();
+        // Only load playlists if user is logged in (not for guests initially)
+        if (auth.loggedIn) {
+            store.loadIdNamePairs();
+        }
     }, []);
 
     // Update filtered playlists when store or filters change
@@ -154,24 +157,27 @@ const HomeScreen = () => {
     };
 
     return (
-        <Box sx={{ display: 'flex', height: 'calc(100vh - 64px)', bgcolor: '#f5f5f5' }}>
-            {/* Left Sidebar - Search Filters (Vertical) */}
+        <Box sx={{ 
+            display: 'flex', 
+            height: 'calc(100vh - 64px)', 
+            bgcolor: '#f8e0f0' // Pink background to match spec
+        }}>
+            {/* Left Sidebar - Search Filters */}
             <Box sx={{ 
-                width: '350px', 
-                bgcolor: 'white', 
+                width: '300px', 
+                bgcolor: '#f5f5dc', // Cream/beige
                 p: 3,
-                borderRight: 1,
-                borderColor: 'divider',
+                borderRight: '1px solid #ddd',
                 overflowY: 'auto'
             }}>
-                {/* Playlists Header (No Sort Here) */}
+                {/* Playlists Header */}
                 <Box sx={{ mb: 3 }}>
-                    <Typography variant="h4" sx={{ color: '#d946ef', fontWeight: 'bold', mb: 2 }}>
+                    <Typography variant="h5" sx={{ color: '#333', fontWeight: 'bold', mb: 2 }}>
                         Playlists
                     </Typography>
                 </Box>
 
-                {/* Vertical Search Filters */}
+                {/* Search Filters */}
                 <Stack spacing={2}>
                     <TextField
                         fullWidth
@@ -271,7 +277,10 @@ const HomeScreen = () => {
                             startIcon={<SearchIcon />}
                             onClick={handleSearch}
                             fullWidth
-                            sx={{ backgroundColor: '#8b5cf6' }}
+                            sx={{ 
+                                backgroundColor: '#333',
+                                '&:hover': { backgroundColor: '#555' }
+                            }}
                         >
                             Search
                         </Button>
@@ -280,37 +289,61 @@ const HomeScreen = () => {
                             startIcon={<ClearIcon />}
                             onClick={handleClear}
                             fullWidth
-                            sx={{ color: '#8b5cf6', borderColor: '#8b5cf6' }}
+                            sx={{ 
+                                color: '#333', 
+                                borderColor: '#333',
+                                '&:hover': { 
+                                    borderColor: '#555',
+                                    backgroundColor: 'rgba(0,0,0,0.05)'
+                                }
+                            }}
                         >
                             Clear
                         </Button>
                     </Box>
                 </Stack>
 
-                {/* New Playlist Button */}
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={handleCreateNewList}
-                    fullWidth
-                    sx={{ 
-                        mt: 3,
-                        backgroundColor: '#8b5cf6',
-                        '&:hover': { backgroundColor: '#7c3aed' }
-                    }}
-                >
-                    New Playlist
-                </Button>
+                {/* New Playlist Button - ONLY FOR LOGGED IN USERS */}
+                {auth.loggedIn && (
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={handleCreateNewList}
+                        fullWidth
+                        sx={{ 
+                            mt: 3,
+                            backgroundColor: '#333',
+                            '&:hover': { backgroundColor: '#555' }
+                        }}
+                    >
+                        New Playlist
+                    </Button>
+                )}
+
+                {/* Guest message */}
+                {auth.isGuest && (
+                    <Typography 
+                        variant="body2" 
+                        sx={{ 
+                            mt: 3, 
+                            color: '#666',
+                            textAlign: 'center',
+                            fontStyle: 'italic'
+                        }}
+                    >
+                        Login to create playlists
+                    </Typography>
+                )}
             </Box>
 
-            {/* Right Side - Playlists Display with Sort Controls */}
+            {/* Right Side - Playlists Display */}
             <Box sx={{ 
                 flex: 1, 
-                bgcolor: '#f8fafc',
+                bgcolor: '#f5f5dc', // Cream/beige
                 p: 3,
                 overflowY: 'auto'
             }}>
-                {/* Header with Sort Controls - NOW ON RIGHT SIDE */}
+                {/* Header with Sort Controls */}
                 <Box sx={{ 
                     display: 'flex', 
                     justifyContent: 'space-between', 
@@ -318,14 +351,14 @@ const HomeScreen = () => {
                     mb: 3,
                     bgcolor: 'white',
                     p: 2,
-                    borderRadius: 2,
-                    boxShadow: 1
+                    borderRadius: 1,
+                    border: '1px solid #ddd'
                 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <Typography variant="body1" color="text.secondary">
                             Sort: 
                         </Typography>
-                        <FormControl size="small" sx={{ minWidth: 140 }}>
+                        <FormControl size="small" sx={{ minWidth: 160 }}>
                             <Select
                                 value={`${sortBy}_${sortOrder}`}
                                 onChange={(e) => {
@@ -340,16 +373,17 @@ const HomeScreen = () => {
                                 <MenuItem value="name_asc">Name (A-Z)</MenuItem>
                                 <MenuItem value="name_desc">Name (Z-A)</MenuItem>
                                 <MenuItem value="owner_asc">Owner (A-Z)</MenuItem>
-                                <MenuItem value="likes_desc">Likes (Hi-Lo)</MenuItem>
-                                <MenuItem value="dislikes_desc">Dislikes (Hi-Lo)</MenuItem>
+                                <MenuItem value="owner_desc">Owner (Z-A)</MenuItem>
                             </Select>
                         </FormControl>
                     </Box>
                     
                     <Chip 
                         label={`${getPlaylistCount()} Playlist${getPlaylistCount() !== 1 ? 's' : ''}`}
-                        color="primary"
-                        variant="outlined"
+                        sx={{ 
+                            backgroundColor: '#333',
+                            color: 'white'
+                        }}
                     />
                 </Box>
 
@@ -359,18 +393,25 @@ const HomeScreen = () => {
                         textAlign: 'center', 
                         py: 8,
                         bgcolor: 'white',
-                        borderRadius: 2,
-                        border: '2px dashed',
-                        borderColor: 'grey.300'
+                        borderRadius: 1,
+                        border: '2px dashed #ccc'
                     }}>
                         <Typography variant="h6" color="text.secondary" gutterBottom>
-                            {store.idNamePairs?.length === 0 ? 'No playlists found' : 
-                             hasActiveFilters() ? 'No playlists match your search' : 'No playlists found'}
+                            {auth.isGuest 
+                                ? 'Search for playlists to browse' 
+                                : store.idNamePairs?.length === 0 
+                                    ? 'No playlists found' 
+                                    : hasActiveFilters() 
+                                        ? 'No playlists match your search' 
+                                        : 'No playlists found'
+                            }
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                            {store.idNamePairs?.length === 0 || !hasActiveFilters() ? 
-                                'Create your first playlist to get started!' : 
-                                'Try adjusting your search filters'
+                            {auth.isGuest 
+                                ? 'Enter search criteria above to find playlists'
+                                : store.idNamePairs?.length === 0 || !hasActiveFilters() 
+                                    ? 'Create your first playlist to get started!' 
+                                    : 'Try adjusting your search filters'
                             }
                         </Typography>
                     </Box>

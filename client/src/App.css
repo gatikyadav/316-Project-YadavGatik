@@ -1,77 +1,38 @@
 :root {
-  /* 
-        FIRST WE'LL DEFINE OUR SWATCHES, i.e. THE COMPLEMENTARY
-        COLORS THAT WE'LL USE TOGETHER IN MULTIPLE PLACES THAT
-        TOGETHER WILL MAKE UP A GIVEN THEME
-    
-        @author McKilla Gorilla
-    */
   --swatch-foundation: #eeeedd;
-  --swatch-primary: #e6e6e6;
+  --swatch-primary: #f5f5dc;
   --swatch-complement: #e1e4cb;
   --swatch-contrast: #999999;
-  --swatch-accent: #669966;
+  --swatch-accent: #e020a0;
   --swatch-status: #123456;
-  --my-font-family: "Robaaaoto";
+  --pink-bg: #f8e0f0;
+  --cream-bg: #f5f5dc;
   --bounceEasing: cubic-bezier(0.51, 0.92, 0.24, 1.15);
 }
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-  background-image: url('https://thumbs.dreamstime.com/b/music-notes-symbols-seamless-pattern-design-fully-editable-fill-background-color-music-notes-symbols-seamless-pattern-118273669.jpg')
+  margin: 0;
+  padding: 0;
+  background-color: #f8e0f0; /* Light pink background */
+  font-family: 'Roboto', sans-serif;
 }
 
 #root {
-  background-color: var(--swatch-primary);
-  font-family: "Lexend Exa";
-  position: absolute;
-  width: 80%;
-  left: 10%;
-  height: 90%;
-  top: 5%;
-}
-
-#app-root {
-  position: absolute;
+  font-family: "Roboto", sans-serif;
   width: 100%;
-  height: 100%;
-  top: 0%;
-  left: 0%;
+  min-height: 100vh;
+  background-color: #f8e0f0;
 }
 
-#playlister-banner {
-  position: absolute;
-  left: 0%;
-  top: 0%;
-  width: 100%;
-  height: 10%;
-  float: left;
-  background-image: linear-gradient(to bottom, #b8b808, #636723);
-  color: white;
-  font-size: 48pt;
-  border-color: black;
-  border-width: 2px;
-  border-style: solid;
-  border-radius: 10px;
-}
-#splash-screen {
-  background-image: url("https://www.gifcen.com/wp-content/uploads/2022/03/rickroll-gif-7.gif");
-  background-size: cover;
-  color: rgb(0, 0, 0);
-  font-size: 10vw;
-  border-color: black;
-  border-width: 5px;
-  border-style: solid;
-  border-radius: 2px;
-  padding-top: 1%;
-  padding-bottom: 14%;
-  height:70%;
-  text-align: center;
-  vertical-align: center;
-}
-
+/* Edit toolbar styling */
 #edit-toolbar {
   background-color: transparent;
-  transform: translate(41%, 0%);
 }
 
 .playlister-button,
@@ -94,93 +55,19 @@ body {
   cursor: not-allowed;
 }
 
-#playlister-list-selector {
-  position: absolute;
-  left: 0%;
-  top: 10%;
-  width: 100%;
-  height: 80%;
-  background-color: var(--swatch-primary);
-  max-height: 100px;
-  overflow: scroll;
-}
-
-#playlister-workspace {
-  position: absolute;
-  left: 0%;
-  top: 10%;
-  width: 100%;
-  height: 80%;
-  background-color: var(--swatch-accent);
-  max-height: 100px;
-  overflow: scroll;
-}
-
-#playlister-statusbar {
-  position: absolute;
-  left: 0%;
-  top: 90%;
-  width: 100%;
-  height: 10%;
-  background-color: rgb(0, 127, 255);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 50pt;
-}
-
-#list-selector-heading {
-  position: absolute;
-  left: 0%;
-  top: 0%;
-  padding-left: 25%;
-  width: 50%;
-  height: 10%;
-  text-align: center;
-  font-size: 24pt;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#add-list-button {
-  float: left;
-}
-
-#list-selector-list {
-  position: absolute;
-  left: 0%;
-  top: 10%;
-  width: 100%;
-  height: 90%;
-  display: flex;
-  flex-direction: column;
-  overflow: scroll;
-}
-
-
+/* List cards */
 .list-card,
 .selected-list-card,
 .unselected-list-card {
-  font-size: 18pt;
-  margin: 10px;
-  padding: 20px;
-  border-radius: 25px;
-}
-
-.list-card:aria-disabled,
-.list-card[aria-disabled] {
-  border: 1px solid #999999;
-  background-color: #cccccc;
-  color: #666666;
-  pointer-events: none;
+  font-size: 16pt;
+  margin: 8px;
+  padding: 16px;
+  border-radius: 8px;
 }
 
 .unselected-list-card:hover {
   cursor: pointer;
-  background-color: var(--swatch-contrast);
-  color: white;
+  background-color: #e0e0e0;
 }
 
 .selected-list-card {
@@ -189,86 +76,18 @@ body {
 }
 
 .unselected-list-card {
-  background-color: #d6c4d8;
+  background-color: white;
 }
 
 .list-card-button {
   float: right;
-  transform: scale(2);
-}
-
-#workspace-home,
-#workspace-edit {
-  position: absolute;
-  left: 0%;
-  top: 0%;
-  width: 100%;
-  height: 100%;
-}
-
-#edit-numbering {
-  position: absolute;
-  left: 0%;
-  top: 0%;
-  width: 20%;
-  height: 100%;
-  background-color: var(--swatch-status);
-}
-
-#edit-items {
-  position: absolute;
-  left: 20%;
-  top: 0%;
-  width: 80%;
-  height: 100%;
-  background-color: var(--swatch-primary);
-}
-
-.item-number,
-.playlister-item,
-.playlister-item-dragged-to {
-  display: flex;
-  align-items: center;
-  font-size: 48pt;
-  height: 20%;
-}
-
-.item-number {
-  justify-content: center;
-  width: 100%;
-  border: 1px 0px 1px 1px;
-  border-color: black;
-  background-color: linen;
-  color: black;
 }
 
 input {
-  font-size: 20pt;
+  font-size: 16pt;
 }
 
-.playlister-item,
-.playlister-item-dragged-to {
-  text-align: left;
-  width: 95%;
-  padding-left: 5%;
-}
-.playlister-item {
-  background-color: var(--swatch-complement);
-}
-.playlister-item-dragged-to {
-  background-color: var(--swatch-accent);
-}
-
-.disabled {
-  background-color: lightgray;
-}
-
-.disabled:hover {
-  color: var(--swatch-neutral);
-}
-
-/* THIS STYLE SHEET MANAGES STYLE FOR OUR MODAL, i.e. DIALOG BOX */
-
+/* Modal Styling */
 .modal {
   position: fixed;
   top: 0;
@@ -279,13 +98,11 @@ input {
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: var(--black);
-  color: var(--swatch-text);
+  background: rgba(0, 0, 0, 0.5);
   cursor: pointer;
   visibility: hidden;
   opacity: 0;
   transition: all 0.35s ease-in;
-  font-family: var(--font-primary);
 }
 
 .modal.is-visible {
@@ -293,66 +110,33 @@ input {
   opacity: 1;
 }
 
-.modal-root {
-  position: relative;
-  max-width: 1200vw;
-  max-height: 600vh;
-  overflow: visible;
-  display: flex;
-  flex-direction: column;
-  background: var(--swatch-complement);
-  cursor: default;
-  border-width: 2px;
-  border-color: black;
-  border-style: solid;
-  box-shadow: 5px 10px #888888;
-}
-
-.modal-textfield {
-  float: right;
-  width: 200px;
-}
-
 .modal-dialog {
   position: relative;
   max-width: 800px;
   max-height: 80vh;
-  background: var(--swatch-complement);
+  background: var(--swatch-cream);
   overflow: auto;
   cursor: default;
-  border-width: 5px;
-  border-radius: 10px;
-  border-style: groove;
+  border-width: 2px;
+  border-radius: 8px;
+  border-style: solid;
+  border-color: #ccc;
 }
 
 .modal-dialog > * {
   padding: 1rem;
 }
 
-.modal-header,
-.modal-footer {
-  background: var(--lightgray);
-}
-
 .modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: dotted;
+  border-bottom: 1px solid #ddd;
 }
 
-.modal-header,
-.modal-close {
-  font-size: 1.5rem;
-}
-
-.modal p + p {
-  margin-top: 1rem;
-}
-
-.modal-control {
-  cursor: pointer;
-  width: 20%;
+.modal-textfield {
+  float: right;
+  width: 200px;
 }
 
 .dialog-header {
@@ -367,8 +151,7 @@ input {
   text-align: center;
 }
 
-/* ANIMATIONS
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Animations */
 [data-animation] .modal-dialog {
   opacity: 0;
   transition: all 0.5s var(--bounceEasing);
@@ -383,82 +166,16 @@ input {
   transform: translateY(100%);
 }
 
-[data-animation="slideInOutTop"] .modal-dialog {
-  transform: translateY(-100%);
-}
-
-[data-animation="slideInOutLeft"] .modal-dialog {
-  transform: translateX(-100%);
-}
-
-[data-animation="slideInOutRight"] .modal-dialog {
-  transform: translateX(100%);
-}
-
-[data-animation="zoomInOut"] .modal-dialog {
-  transform: scale(0.2);
-}
-
-[data-animation="rotateInOutDown"] .modal-dialog {
-  transform-origin: top left;
-  transform: rotate(-1turn);
-}
-
-[data-animation="mixInAnimations"].is-visible .modal-dialog {
-  animation: mixInAnimations 2s 0.2s linear forwards;
-}
-
-[data-animation="slideInOutDown"].is-visible .modal-dialog,
-[data-animation="slideInOutTop"].is-visible .modal-dialog,
-[data-animation="slideInOutLeft"].is-visible .modal-dialog,
-[data-animation="slideInOutRight"].is-visible .modal-dialog,
-[data-animation="zoomInOut"].is-visible .modal-dialog,
-[data-animation="rotateInOutDown"].is-visible .modal-dialog {
+[data-animation="slideInOutDown"].is-visible .modal-dialog {
   transform: none;
 }
 
-@keyframes mixInAnimations {
-  0% {
-    transform: translateX(-100%);
-  }
+/* Song link styling */
+.song-link {
+  color: inherit;
+  text-decoration: none;
+}
 
-  10% {
-    transform: translateX(0);
-  }
-
-  20% {
-    transform: rotate(20deg);
-  }
-
-  30% {
-    transform: rotate(-20deg);
-  }
-
-  40% {
-    transform: rotate(15deg);
-  }
-
-  50% {
-    transform: rotate(-15deg);
-  }
-
-  60% {
-    transform: rotate(10deg);
-  }
-
-  70% {
-    transform: rotate(-10deg);
-  }
-
-  80% {
-    transform: rotate(5deg);
-  }
-
-  90% {
-    transform: rotate(-5deg);
-  }
-
-  100% {
-    transform: rotate(0deg);
-  }
+.song-link:hover {
+  text-decoration: underline;
 }

@@ -1,6 +1,6 @@
-import { useContext, useState, useRef } from 'react';
-import { Link, useHistory } from 'react-router-dom';
-import AuthContext from '../auth'
+import { useContext, useState, useRef, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+import AuthContext from '../auth';
 
 import {
     Box,
@@ -15,35 +15,40 @@ import {
     LockOutlined as LockOutlinedIcon,
     Clear as ClearIcon,
     Home as HomeIcon,
-    AccountCircle as AccountCircleIcon,
     Person as PersonIcon
 } from '@mui/icons-material';
 
 /*
-    Create Account Screen - Use Case 2.1
+    Edit Account Screen - Use Case 2.3
     
-    Per specification:
-    - Enter unique email address
-    - Enter user name (does not need to be unique)
-    - Enter password twice (minimum 8 characters)
-    - Upload avatar image (prescribed fixed size, denoted in UI)
-    - Create Account button disabled until all fields valid
-    - Does NOT auto-login - redirects to login screen
-    - Inline field validation (no modals)
+    Per specification (Figure 3.4):
+    - Similar to Create Account screen
+    - User may NOT change email (display only)
+    - User may change: userName, password, avatar
+    - Password change requires entering twice
+    - Complete button disabled until all valid
+    - Cancel button returns to previous screen
+    - Validation: passwords match, min 8 chars, avatar 100x100px
     
     @author Gatik Yadav
 */
 
-export default function RegisterScreen() {
+export default function EditAccountScreen() {
     const { auth } = useContext(AuthContext);
     const history = useHistory();
     const fileInputRef = useRef(null);
 
-    // Required avatar dimensions (per spec: prescribed fixed size)
+    // Required avatar dimensions
     const AVATAR_WIDTH = 100;
     const AVATAR_HEIGHT = 100;
 
-    // Form state
+    // Store the previous location to return to after editing
+    const [previousPath] = useState(() => {
+        // Default to home if no referrer
+        return document.referrer ? '/' : '/';
+    });
+
+    // Form state - pre-populate with current user data
     const [formData, setFormData] = useState({
         userName: '',
         email: '',
@@ -54,15 +59,34 @@ export default function RegisterScreen() {
     // Avatar image state
     const [avatarImage, setAvatarImage] = useState(null);
     const [avatarPreview, setAvatarPreview] = useState(null);
+    const [avatarChanged, setAvatarChanged] = useState(false);
 
-    // Error state for inline validation (per spec: feedback in text field)
+    // Error state
     const [errors, setErrors] = useState({
         userName: '',
-        email: '',
         password: '',
         passwordConfirm: '',
         avatar: ''
     });
+
+    // Track if password is being changed
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
+
+    // Load current user data on mount
+    useEffect(() => {
+        if (auth.user) {
+            setFormData(prev => ({
+                ...prev,
+                userName: auth.user.userName || '',
+                email: auth.user.email || ''
+            }));
+            // Set current avatar
+            if (auth.user.avatarImage) {
+                setAvatarPreview(auth.user.avatarImage);
+                setAvatarImage(auth.user.avatarImage);
+            }
+        }
+    }, [auth.user]);
 
     const handleInputChange = (field) => (event) => {
         const value = event.target.value;
@@ -71,6 +95,12 @@ export default function RegisterScreen() {
             [field]: value
         }));
         
+        // Track if user is trying to change password
+        if (field === 'password' || field === 'passwordConfirm') {
+            setIsChangingPassword(value.length > 0 || 
+                (field === 'password' ? formData.passwordConfirm.length > 0 : formData.password.length > 0));
+        }
+
         // Clear error when user starts typing
         if (errors[field]) {
             setErrors(prev => ({
@@ -92,6 +122,14 @@ export default function RegisterScreen() {
             ...prev,
             [field]: ''
         }));
+        
+        if (field === 'password' || field === 'passwordConfirm') {
+            // Check if other password field is also empty
+            const otherField = field === 'password' ? 'passwordConfirm' : 'password';
+            if (formData[otherField] === '') {
+                setIsChangingPassword(false);
+            }
+        }
     };
 
     const validateField = (field, value) => {
@@ -103,13 +141,8 @@ export default function RegisterScreen() {
                     error = 'User name cannot be only whitespace';
                 }
                 break;
-            case 'email':
-                if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-                    error = 'Please enter a valid email address';
-                }
-                break;
             case 'password':
-                // Per spec: password must be at least 8 characters
+                // Only validate if user is changing password
                 if (value && value.length < 8) {
                     error = 'Password must be at least 8 characters';
                 }
@@ -159,7 +192,7 @@ export default function RegisterScreen() {
                 return;
             }
 
-            // Create image to check dimensions (per spec: prescribed fixed size)
+            // Create image to check dimensions
             const img = new Image();
             const reader = new FileReader();
 
@@ -174,9 +207,10 @@ export default function RegisterScreen() {
                         return;
                     }
 
-                    // Valid image - store as base64 string (per spec)
+                    // Valid image - store as base64 string
                     setAvatarImage(e.target.result);
                     setAvatarPreview(e.target.result);
+                    setAvatarChanged(true);
                     setErrors(prev => ({
                         ...prev,
                         avatar: ''
@@ -189,11 +223,10 @@ export default function RegisterScreen() {
         }
     };
 
-    // Per spec: Create Account button should not be enabled until proper input is provided
+    // Check if form is valid for submission
     const isFormValid = () => {
-        // Check all required fields are filled
-        if (!formData.userName.trim() || !formData.email || 
-            !formData.password || !formData.passwordConfirm) {
+        // userName is required and cannot be whitespace
+        if (!formData.userName.trim()) {
             return false;
         }
 
@@ -202,14 +235,14 @@ export default function RegisterScreen() {
             return false;
         }
 
-        // Check password requirements (minimum 8 characters)
-        if (formData.password.length < 8) {
-            return false;
-        }
-
-        // Check passwords match
-        if (formData.password !== formData.passwordConfirm) {
-            return false;
+        // If changing password, both fields must be valid
+        if (isChangingPassword) {
+            if (!formData.password || formData.password.length < 8) {
+                return false;
+            }
+            if (formData.password !== formData.passwordConfirm) {
+                return false;
+            }
         }
 
         return true;
@@ -222,39 +255,61 @@ export default function RegisterScreen() {
             return;
         }
 
-        // Register the user
-        const result = await auth.registerUser(
-            formData.userName.trim(),
-            formData.email,
-            formData.password,
-            formData.passwordConfirm,
-            avatarImage
-        );
+        // Build update data
+        const updateData = {
+            userName: formData.userName.trim()
+        };
+
+        // Only include password if changing
+        if (isChangingPassword && formData.password) {
+            updateData.password = formData.password;
+            updateData.passwordVerify = formData.passwordConfirm;
+        }
+
+        // Only include avatar if changed
+        if (avatarChanged) {
+            updateData.avatarImage = avatarImage;
+        }
+
+        // Update the user
+        const result = await auth.updateUser(updateData);
 
         if (result.success) {
-            // Per spec: User is taken to login screen where they may now login
-            history.push('/login/');
+            // Return to previous screen
+            history.goBack();
         } else {
-            // Show error (e.g., email already exists)
+            // Show error
             if (result.error) {
-                if (result.error.includes('email')) {
-                    setErrors(prev => ({
-                        ...prev,
-                        email: result.error
-                    }));
-                } else {
-                    // Generic error - show on email field
-                    setErrors(prev => ({
-                        ...prev,
-                        email: result.error
-                    }));
-                }
+                setErrors(prev => ({
+                    ...prev,
+                    userName: result.error
+                }));
             }
         }
     };
 
+    const handleCancel = () => {
+        // Return to previous screen without saving
+        history.goBack();
+    };
+
     const handleHomeClick = () => {
         history.push('/');
+    };
+
+    // Get user's avatar for header display
+    const getUserAvatar = () => {
+        if (avatarPreview) {
+            return avatarPreview;
+        }
+        return null;
+    };
+
+    const getUserInitials = () => {
+        if (formData.userName) {
+            return formData.userName.substring(0, 2).toUpperCase();
+        }
+        return '';
     };
 
     return (
@@ -281,9 +336,19 @@ export default function RegisterScreen() {
                 >
                     <HomeIcon />
                 </IconButton>
-                <IconButton sx={{ color: 'white' }}>
-                    <AccountCircleIcon sx={{ fontSize: 36 }} />
-                </IconButton>
+                
+                {/* Show user's avatar in header */}
+                <Avatar
+                    src={getUserAvatar()}
+                    sx={{ 
+                        width: 36, 
+                        height: 36,
+                        bgcolor: getUserAvatar() ? 'transparent' : '#fff',
+                        color: '#e020a0'
+                    }}
+                >
+                    {!getUserAvatar() && getUserInitials()}
+                </Avatar>
             </Box>
 
             {/* Main Content */}
@@ -317,7 +382,7 @@ export default function RegisterScreen() {
                             fontWeight: 400
                         }}
                     >
-                        Create Account
+                        Edit Account
                     </Typography>
 
                     {/* Form */}
@@ -352,7 +417,6 @@ export default function RegisterScreen() {
                                 >
                                     Select
                                 </Button>
-                                {/* Per spec: image size should be denoted in the UI */}
                                 <Typography 
                                     variant="caption" 
                                     sx={{ 
@@ -415,40 +479,28 @@ export default function RegisterScreen() {
                             </Box>
                         </Box>
 
-                        {/* Email Field */}
+                        {/* Email Field - READ ONLY per spec */}
                         <Box sx={{ mb: 2, ml: 9 }}>
                             <TextField
                                 fullWidth
                                 label="Email"
                                 type="email"
                                 value={formData.email}
-                                onChange={handleInputChange('email')}
-                                error={!!errors.email}
-                                helperText={errors.email}
                                 variant="standard"
+                                disabled
                                 InputProps={{
-                                    endAdornment: formData.email && (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                size="small"
-                                                onClick={handleClearField('email')}
-                                                sx={{ 
-                                                    bgcolor: '#999',
-                                                    color: 'white',
-                                                    width: 20,
-                                                    height: 20,
-                                                    '&:hover': { bgcolor: '#777' }
-                                                }}
-                                            >
-                                                <ClearIcon sx={{ fontSize: 14 }} />
-                                            </IconButton>
-                                        </InputAdornment>
-                                    )
+                                    readOnly: true,
+                                }}
+                                helperText="Email cannot be changed"
+                                sx={{
+                                    '& .MuiInputBase-input.Mui-disabled': {
+                                        WebkitTextFillColor: '#666',
+                                    }
                                 }}
                             />
                         </Box>
 
-                        {/* Password Field */}
+                        {/* Password Field - Optional */}
                         <Box sx={{ mb: 2, ml: 9 }}>
                             <TextField
                                 fullWidth
@@ -457,7 +509,7 @@ export default function RegisterScreen() {
                                 value={formData.password}
                                 onChange={handleInputChange('password')}
                                 error={!!errors.password}
-                                helperText={errors.password || 'Minimum 8 characters'}
+                                helperText={errors.password || 'Leave blank to keep current password'}
                                 variant="standard"
                                 InputProps={{
                                     endAdornment: formData.password && (
@@ -481,7 +533,7 @@ export default function RegisterScreen() {
                             />
                         </Box>
 
-                        {/* Password Confirm Field */}
+                        {/* Password Confirm Field - Only needed if changing password */}
                         <Box sx={{ mb: 3, ml: 9 }}>
                             <TextField
                                 fullWidth
@@ -492,6 +544,7 @@ export default function RegisterScreen() {
                                 error={!!errors.passwordConfirm}
                                 helperText={errors.passwordConfirm}
                                 variant="standard"
+                                disabled={!isChangingPassword}
                                 InputProps={{
                                     endAdornment: formData.passwordConfirm && (
                                         <InputAdornment position="end">
@@ -514,8 +567,8 @@ export default function RegisterScreen() {
                             />
                         </Box>
 
-                        {/* Create Account Button - Disabled until valid per spec */}
-                        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                        {/* Complete and Cancel Buttons */}
+                        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 2 }}>
                             <Button
                                 type="submit"
                                 variant="contained"
@@ -535,22 +588,25 @@ export default function RegisterScreen() {
                                     }
                                 }}
                             >
-                                Create Account
+                                Complete
                             </Button>
-                        </Box>
-
-                        {/* Sign In Link */}
-                        <Box sx={{ textAlign: 'center' }}>
-                            <Link 
-                                to="/login/"
-                                style={{ 
-                                    color: '#e020a0',
-                                    textDecoration: 'none',
-                                    fontWeight: 'bold'
+                            <Button
+                                type="button"
+                                variant="contained"
+                                onClick={handleCancel}
+                                sx={{
+                                    bgcolor: '#333',
+                                    color: 'white',
+                                    px: 4,
+                                    py: 1,
+                                    borderRadius: 1,
+                                    textTransform: 'none',
+                                    fontSize: '1rem',
+                                    '&:hover': { bgcolor: '#555' }
                                 }}
                             >
-                                Already have an account? Sign In
-                            </Link>
+                                Cancel
+                            </Button>
                         </Box>
                     </Box>
                 </Box>

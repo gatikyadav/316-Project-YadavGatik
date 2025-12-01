@@ -1,9 +1,6 @@
 /*
     This is our http api, which we use to send requests to
-    our back-end API. Note we're using the native Fetch API,
-    which is a browser standard for making HTTP requests.
-    Fetch is Promise-based and provides good control over 
-    request configuration.
+    our back-end API for store operations (playlists, songs, etc.)
     
     @author McKilla Gorilla
     @author Gatik Yadav
@@ -14,7 +11,7 @@ const BASE_URL = 'http://localhost:4000/store';
 // Helper function to handle fetch requests with Axios-compatible response format
 const fetchWithConfig = async (url, options = {}) => {
     const config = {
-        credentials: 'include', // This replaces axios.defaults.withCredentials = true
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
             ...options.headers
@@ -69,18 +66,12 @@ const fetchWithConfig = async (url, options = {}) => {
     }
 };
 
-// THESE ARE ALL THE REQUESTS WE'LL BE MAKING, ALL REQUESTS HAVE A
-// REQUEST METHOD (like get) AND PATH (like /playlist). SOME ALSO
-// REQUIRE AN id SO THAT THE SERVER KNOWS ON WHICH LIST TO DO ITS
-// WORK, AND SOME REQUIRE DATA, WHICH WE WILL FORMAT HERE, FOR WHEN
-// WE NEED TO PUT THINGS INTO THE DATABASE OR IF WE HAVE SOME
-// CUSTOM FILTERS FOR QUERIES
+// NOTE: Removed trailing slashes to match server routes exactly
 
 export const createPlaylist = (newListName, newSongs, userEmail) => {
-    return fetchWithConfig('/playlist/', {
+    return fetchWithConfig('/playlist', {
         method: 'POST',
         body: JSON.stringify({
-            // SPECIFY THE PAYLOAD
             name: newListName,
             songs: newSongs,
             ownerEmail: userEmail
@@ -101,7 +92,7 @@ export const getPlaylistById = (id) => {
 };
 
 export const getPlaylistPairs = () => {
-    return fetchWithConfig('/playlistpairs/', {
+    return fetchWithConfig('/playlistpairs', {
         method: 'GET'
     });
 };
@@ -111,7 +102,6 @@ export const updatePlaylistById = (id, playlist) => {
     return fetchWithConfig(`/playlist/${id}`, {
         method: 'PUT',
         body: JSON.stringify({
-            // SPECIFY THE PAYLOAD
             playlist: playlist
         })
     });

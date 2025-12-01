@@ -1,4 +1,5 @@
 import { useContext } from 'react'
+import { useLocation } from 'react-router-dom'
 import AuthContext from '../auth'
 import { GlobalStoreContext } from '../store'
 
@@ -11,15 +12,23 @@ import { GlobalStoreContext } from '../store'
 function Statusbar() {
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
+    const location = useLocation();
+
+    // HIDE STATUSBAR ON SPLASH SCREEN, LOGIN, and REGISTER pages
+    const hidePaths = ['/', '/login/', '/register/'];
+    if (hidePaths.includes(location.pathname) && !auth.loggedIn && !auth.isGuest) {
+        return null;
+    }
+
     console.log("logged in: " +  auth.loggedIn);
     let text ="";
     if (auth.loggedIn && store.currentList){
         text = store.currentList.name;
-    return (
-        <div id="playlister-statusbar">
-            {text}
-        </div>
-    );
+        return (
+            <div id="playlister-statusbar">
+                {text}
+            </div>
+        );
     }
     return null;
 }
